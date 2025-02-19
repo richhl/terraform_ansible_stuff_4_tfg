@@ -1,10 +1,10 @@
-- name: Provisioning admin
+- name: Provisioning ubuntu
   hosts: llm_servers
   tasks:
-   - name: Create a user 'admin' with a home directory
+   - name: Create a user 'ubuntu' with a home directory
      become: true
      ansible.builtin.user:
-       name: admin
+       name: ubuntu
        create_home: yes
 
    - name: Install runtime prerrequsites
@@ -21,12 +21,12 @@
      become: true
      file:
        state: absent
-       path: /home/admin/snomed-ct-entity-linking
+       path: /home/ubuntu/snomed-ct-entity-linking
 
    - name: Clone snomed repo master branch
      ansible.builtin.git:
        repo:  https://github.com/richhl/snomed-ct-entity-linking.git
-       dest: /home/admin/snomed-ct-entity-linking
+       dest: /home/ubuntu/snomed-ct-entity-linking
        version: main
        accept_hostkey: yes
 
@@ -36,14 +36,14 @@
          get_url:
            url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
            dest: /tmp/install-miniconda.sh
-           checksum: sha256:832de27a5a35b7963f0d83466abada3eb138e51985255f190e0dc350427a9dd1
+           checksum: sha256:4766d85b5f7d235ce250e998ebb5a8a8210cbd4f2b0fea4d2177b3ed9ea87884
            mode: 0550
        - name: Create conda folder
          become: True
          file:
            path: /opt/miniconda3
            state: directory
-           owner: admin
+           owner: ubuntu
            mode: 755
            recurse: yes
        - name: Run the installer
@@ -69,69 +69,70 @@
            mode: +x
            recurse: yes
 
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.file:
+       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+       state: "directory"
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.copy:
+       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/data/mimic-iv_notes_training_set.csv"
+       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.file:
+       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+       state: "directory"
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.copy:
+       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/assets/train_annotations.csv"
+       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.file:
+       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+       state: "directory"
+
+   - name: Copy premade files
+     become_user: ubuntu
+     become: true
+     ansible.builtin.copy:
+       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/backup/annotations_extended_for_classification.gzip"
+       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+
    - name: Use faisscpu for my environment
      ansible.builtin.lineinfile:
-       path: "/home/admin/snomed-ct-entity-linking/3rd Place/requirements_snomed.yml"
+       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/requirements_snomed.yml"
        regexp: '      - faiss-gpu==1.7.4'
        line: '      - faiss-cpu==1.7.4'
 
    - name: Create snomed environment
-     become_user: admin
-     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/admin/snomed-ct-entity-linking/3rd Place" && conda env create -f requirements_snomed.yml
+     become_user: ubuntu
+     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f requirements_snomed.yml
      args:
        executable: /bin/bash
-       creates: /home/admin/.conda/envs/snomedct
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.file:
-       path: "/home/admin/snomed-ct-entity-linking/3rd Place/data"
-       state: "directory"
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/data/mimic-iv_notes_training_set.csv"
-       dest: "/home/admin/snomed-ct-entity-linking/3rd Place/data"
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.file:
-       path: "/home/admin/snomed-ct-entity-linking/3rd Place/assets"
-       state: "directory"
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/assets/train_annotations.csv"
-       dest: "/home/admin/snomed-ct-entity-linking/3rd Place/assets"
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.file:
-       path: "/home/admin/snomed-ct-entity-linking/3rd Place/backup"
-       state: "directory"
-
-   - name: Copy premade files
-     become_user: admin
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/backup/annotations_extended_for_classification.gzip"
-       dest: "/home/admin/snomed-ct-entity-linking/3rd Place/backup"
+       creates: /home/ubuntu/.conda/envs/snomedct
 
    - name: Activate snomed && logging huggingface
-     become_user: admin
+     become_user: ubuntu
      shell: source /opt/miniconda3/etc/profile.d/conda.sh && conda activate snomedct && pip install --upgrade huggingface_hub && huggingface-cli login --token {{ lookup('ansible.builtin.env', 'MY_HF_TOKEN') }}
      args:
        executable: /bin/bash
 
-   - name: Not fast tokenizer to avoid bug
-     ansible.builtin.lineinfile:
-       path: "/home/admin/snomed-ct-entity-linking/3rd Place/Finetuning-Entity-Recognition.py"
-       regexp: '^tokenizer ='
-       line: 'tokenizer = transformers.AutoTokenizer.from_pretrained(model_id, use_fast=False)'
+#   - name: Not fast tokenizer to avoid bug
+#     ansible.builtin.lineinfile:
+#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/Finetuning-Entity-Recognition.py"
+#       regexp: '^tokenizer ='
+#       line: 'tokenizer = transformers.AutoTokenizer.from_pretrained(model_id, use_fast=False)'
