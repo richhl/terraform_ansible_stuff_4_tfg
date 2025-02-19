@@ -5,11 +5,11 @@ variable "network_interface_id" {
 
 variable "ami" {
     type = string
-    default = "ami-06bfcdf6c8ba112e7"
+    default = "ami-0159d3b00698ae2f9"
 }
 
 variable "instance_type" {
     type = string
-    default = "c5a.8xlarge"
+    default = "g4dn.2xlarge"
 }
 
