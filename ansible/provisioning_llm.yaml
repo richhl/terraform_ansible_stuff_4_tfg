@@ -120,7 +120,7 @@
 
    - name: Create snomed environment
      become_user: ubuntu
-     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f requirements_snomed.yml
+     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f requirements_snomed_aws_dlami_base_ubuntu_22_torch_2_6_cuda_12.4.yml
      args:
        executable: /bin/bash
        creates: /home/ubuntu/.conda/envs/snomedct
