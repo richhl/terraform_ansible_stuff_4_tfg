@@ -1,5 +1,5 @@
 - name: Provisioning ubuntu
-  hosts: llm_servers
+  hosts: all
   tasks:
    - name: Create a user 'ubuntu' with a home directory
      become: true
