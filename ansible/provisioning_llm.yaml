@@ -21,12 +21,12 @@
      become: true
      file:
        state: absent
-       path: /home/ubuntu/snomed-ct-entity-linking
+       path: /home/ubuntu/health_interoperability_AI
 
    - name: Clone snomed repo master branch
      ansible.builtin.git:
-       repo:  https://github.com/richhl/snomed-ct-entity-linking.git
-       dest: /home/ubuntu/snomed-ct-entity-linking
+       repo:  https://github.com/richhl/health_interoperability_AI.git
+       dest: /home/ubuntu/health_interoperability_AI
        version: main
        accept_hostkey: yes
 
@@ -74,53 +74,53 @@
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.file:
-#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+#       path: "/home/ubuntu/health_interoperability_AI/data"
 #       state: "directory"
 
 #   - name: Copy premade files
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.copy:
-#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/data/mimic-iv_notes_training_set.csv"
-#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+#       src: "/home/christian/grado/tfg/health_interoperability_AI/data/mimic-iv_notes_training_set.csv"
+#       dest: "/home/ubuntu/health_interoperability_AI/data"
 
 #   - name: Copy premade files
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.file:
-#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+#       path: "/home/ubuntu/health_interoperability_AI/assets"
 #       state: "directory"
 
 #   - name: Copy premade files
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.copy:
-#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/assets/train_annotations.csv"
-#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+#       src: "/home/christian/grado/tfg/health_interoperability_AI/assets/train_annotations.csv"
+#       dest: "/home/ubuntu/health_interoperability_AI/assets"
 
 #   - name: Copy premade files
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.file:
-#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+#       path: "/home/ubuntu/health_interoperability_AI/backup"
 #       state: "directory"
 
 #   - name: Copy premade files
 #     become_user: ubuntu
 #     become: true
 #     ansible.builtin.copy:
-#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/backup/annotations_extended_for_classification.gzip"
-#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+#       src: "/home/christian/grado/tfg/health_interoperability_AI/backup/annotations_extended_for_classification.gzip"
+#       dest: "/home/ubuntu/health_interoperability_AI/backup"
 
    - name: Use faisscpu for my environment
      ansible.builtin.lineinfile:
-       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/requirements_snomed.yml"
+       path: "/home/ubuntu/health_interoperability_AI/requirements_snomed_{{ purpose | default('training')}}.yml"
        regexp: '      - faiss-gpu==1.7.4'
        line: '      - faiss-cpu==1.7.4'
 
    - name: Create snomed environment
      become_user: ubuntu
-     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f "requirements_snomed_{{ purpose | default('training')}}.yml"
+     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/health_interoperability_AI" && conda env create -f "requirements_snomed_{{ purpose | default('training')}}.yml"
      args:
        executable: /bin/bash
        creates: /home/ubuntu/.conda/envs/snomedct
@@ -133,6 +133,6 @@
 
 #   - name: Not fast tokenizer to avoid bug
 #     ansible.builtin.lineinfile:
-#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/Finetuning-Entity-Recognition.py"
+#       path: "/home/ubuntu/health_interoperability_AI/Finetuning-Entity-Recognition.py"
 #       regexp: '^tokenizer ='
 #       line: 'tokenizer = transformers.AutoTokenizer.from_pretrained(model_id, use_fast=False)'
