@@ -1,5 +1,5 @@
 - name: Provisioning ubuntu
-  hosts: llm_servers
+  hosts: all
   tasks:
    - name: Create a user 'ubuntu' with a home directory
      become: true
@@ -70,47 +70,47 @@
            recurse: yes
 
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.file:
-       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
-       state: "directory"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.file:
+#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+#       state: "directory"
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/data/mimic-iv_notes_training_set.csv"
-       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.copy:
+#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/data/mimic-iv_notes_training_set.csv"
+#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/data"
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.file:
-       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
-       state: "directory"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.file:
+#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+#       state: "directory"
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/assets/train_annotations.csv"
-       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.copy:
+#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/assets/train_annotations.csv"
+#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/assets"
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.file:
-       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
-       state: "directory"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.file:
+#       path: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+#       state: "directory"
 
-   - name: Copy premade files
-     become_user: ubuntu
-     become: true
-     ansible.builtin.copy:
-       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/backup/annotations_extended_for_classification.gzip"
-       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
+#   - name: Copy premade files
+#     become_user: ubuntu
+#     become: true
+#     ansible.builtin.copy:
+#       src: "/home/christian/grado/tfg/snomed-ct-entity-linking/3rd Place/backup/annotations_extended_for_classification.gzip"
+#       dest: "/home/ubuntu/snomed-ct-entity-linking/3rd Place/backup"
 
    - name: Use faisscpu for my environment
      ansible.builtin.lineinfile:
@@ -120,7 +120,7 @@
 
    - name: Create snomed environment
      become_user: ubuntu
-     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f requirements_snomed_aws_dlami_base_ubuntu_22_torch_2_6_cuda_12.4.yml
+     shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/snomed-ct-entity-linking/3rd Place" && conda env create -f "requirements_snomed_{{ purpose | default('training')}}.yml"
      args:
        executable: /bin/bash
        creates: /home/ubuntu/.conda/envs/snomedct
