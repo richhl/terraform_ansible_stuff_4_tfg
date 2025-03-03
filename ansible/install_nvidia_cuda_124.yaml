@@ -1,13 +1,27 @@
 - hosts: all
   become: yes
   tasks:
+    - name: Install runtime prerrequsites
+      become: true
+      ansible.builtin.apt:
+        name:
+          - gcc
+          - make
+        state: present
+        update_cache: yes
+
+    - name: Create a directory for cuda installer
+      ansible.builtin.file:
+        path: /home/ubuntu/nfs/cuda
+        state: directory
+        mode: '0755'
     # Install CUDA
-    - name: Download installer
-      get_url:
-        url: https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run
-        dest: /home/ubuntu/nfs/cuda/
-        checksum: sha256:e6a842f4eca9490575cdb68b6b1bb78d47b95a897de48dee292c431892e57d17
-        mode: 0550
+#    - name: Download installer
+#      get_url:
+#        url: https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run
+#        dest: /home/ubuntu/nfs/cuda/
+#        checksum: sha256:e6a842f4eca9490575cdb68b6b1bb78d47b95a897de48dee292c431892e57d17
+#        mode: 0550
 
     - name: Run the CUDA installer script with driver
       command: >
