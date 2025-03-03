@@ -115,6 +115,8 @@
 #       dest: "/home/ubuntu/health_interoperability_AI/backup"
 
    - name: Use faisscpu for my environment
+     become_user: ubuntu
+     become: true
      ansible.builtin.lineinfile:
        path: "/home/ubuntu/health_interoperability_AI/requirements_snomed_{{ purpose | default('training')}}.yml"
        regexp: '      - faiss-gpu==1.7.4'
@@ -122,6 +124,7 @@
 
    - name: Create snomed environment
      become_user: ubuntu
+     become: true
      shell: source /opt/miniconda3/etc/profile.d/conda.sh && cd "/home/ubuntu/health_interoperability_AI" && conda env create -f "requirements_snomed_{{ purpose | default('training')}}.yml"
      args:
        executable: /bin/bash
@@ -129,6 +132,7 @@
 
    - name: Activate snomed && logging huggingface
      become_user: ubuntu
+     become: true
      shell: source /opt/miniconda3/etc/profile.d/conda.sh && conda activate snomedct && pip install --upgrade huggingface_hub && huggingface-cli login --token {{ lookup('ansible.builtin.env', 'MY_HF_TOKEN') }}
      args:
        executable: /bin/bash
