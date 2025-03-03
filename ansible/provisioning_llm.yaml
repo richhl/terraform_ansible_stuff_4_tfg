@@ -24,6 +24,8 @@
        path: /home/ubuntu/health_interoperability_AI
 
    - name: Clone snomed repo master branch
+     become_user: ubuntu
+     become: true
      ansible.builtin.git:
        repo:  https://github.com/richhl/health_interoperability_AI.git
        dest: /home/ubuntu/health_interoperability_AI
